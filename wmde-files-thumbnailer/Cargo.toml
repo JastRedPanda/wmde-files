@@ -1,5 +1,5 @@
 [package]
-name = "cosmic-files-thumbnailer"
+name = "wmde-files-thumbnailer"
 version = "1.9.0"
 edition = "2024"
 

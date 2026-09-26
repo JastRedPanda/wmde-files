@@ -181,13 +181,13 @@ mod tests {
     #[test]
     fn command_expands_thumbnailer_arguments() {
         let thumbnailer = Thumbnailer {
-            exec: "cosmic-files-thumbnailer %o --size %s %i".to_string(),
+            exec: "wmde-files-thumbnailer %o --size %s %i".to_string(),
         };
 
         let command = thumbnailer
             .command(Path::new("input.exe"), Path::new("output.png"), 128)
             .expect("valid thumbnailer command");
-        assert_eq!(command.get_program(), "cosmic-files-thumbnailer");
+        assert_eq!(command.get_program(), "wmde-files-thumbnailer");
         assert_eq!(
             command.get_args().collect::<Vec<_>>(),
             ["output.png", "--size", "128", "input.exe"]

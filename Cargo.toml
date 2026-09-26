@@ -219,7 +219,7 @@ cosmic-settings-config = { path = "../wmde-settings-daemon/config" }
 # smithay-clipboard = { path = "../smithay-clipboard" }
 
 [workspace]
-members = ["wmde-files-applet", "cosmic-files-thumbnailer"]
+members = ["wmde-files-applet", "wmde-files-thumbnailer"]
 
 [workspace.dependencies]
 image = "0.25"

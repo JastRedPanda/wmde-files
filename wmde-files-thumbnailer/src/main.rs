@@ -15,7 +15,7 @@ pub fn thumbnail_from_args(mut args: impl Iterator<Item = OsString>) -> Result<(
     let usage = || {
         io::Error::new(
             io::ErrorKind::InvalidInput,
-            "usage: cosmic-files-thumbnailer OUTPUT --size SIZE INPUT",
+            "usage: wmde-files-thumbnailer OUTPUT --size SIZE INPUT",
         )
     };
     let output = args.next().ok_or_else(usage)?;

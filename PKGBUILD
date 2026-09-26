@@ -44,15 +44,18 @@ build() {
   export ZSTD_SYS_USE_PKG_CONFIG=1
   # Separate invocations so feature unification does not leak the applet's
   # `desktop-applet` feature into the app binary (which would compile out the
-  # recents watcher). Two builds share the target dir; correctness over speed.
+  # recents watcher). The builds share the target dir; correctness over speed.
+  # The thumbnailer (.exe icons, res/fun.wmde.files.thumbnailer) is its own crate
+  # and `just install` expects its binary next to the other two.
   cargo build --release -p wmde-files
   cargo build --release -p wmde-files-applet
+  cargo build --release -p wmde-files-thumbnailer
 }
 
 package() {
   cd "$srcdir/$pkgname"
-  # installs wmde-files{,-applet} to /usr/bin and the fun.wmde.files
-  # .desktop/metainfo/icons to /usr/share
+  # installs wmde-files{,-applet,-thumbnailer} to /usr/bin and the fun.wmde.files
+  # .desktop/metainfo/thumbnailer/icons to /usr/share
   just rootdir="$pkgdir" prefix=/usr install
   install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
 }
