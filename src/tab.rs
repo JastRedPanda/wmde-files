@@ -5480,8 +5480,10 @@ impl Tab {
                     };
 
                     // Each breadcrumb carries the menu for its own ancestor index
+                    // WMDE: as wide as the file context menu, so the two menus of one view match.
                     let mut context_menu =
                         widget::context_menu(mouse_area, Some(menu::location_context_menu(index)))
+                            .item_width(cosmic::widget::menu::ItemWidth::Uniform(360))
                             .on_open(Message::LocationContextMenuIndex(Some(index)))
                             .on_close(Message::LocationContextMenuIndex(None))
                             .on_surface_action(Message::Surface);
