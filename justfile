@@ -12,6 +12,10 @@ cargo-target-dir := env('CARGO_TARGET_DIR', 'target')
 bin-src := cargo-target-dir / 'release' / name
 bin-dst := base-dir / 'bin' / name
 
+thumbnailer-bin-name := name + '-thumbnailer'
+thumbnailer-bin-src := cargo-target-dir / 'release' / thumbnailer-bin-name
+thumbnailer-bin-dst := base-dir / 'bin' / thumbnailer-bin-name
+
 applet-name := name + '-applet'
 applet-src := cargo-target-dir / 'release' / applet-name
 applet-dst := base-dir / 'bin' / applet-name
@@ -32,6 +36,10 @@ shortcuts-dst := clean(rootdir / prefix) / 'share' / 'wmde' / 'app-shortcuts' / 
 # each to find an icon. Static, unlike the main entry, which xdgen generates.
 window-desktops := APPID + '.dialog.desktop ' + APPID + '.operations.desktop'
 applications-dst := clean(rootdir / prefix) / 'share' / 'applications'
+
+thumbnailer := APPID + '.thumbnailer'
+thumbnailer-src := 'res' / thumbnailer
+thumbnailer-dst := clean(rootdir / prefix) / 'share' / 'thumbnailers' / thumbnailer
 
 icons-src := 'res' / 'icons' / 'hicolor'
 icons-dst := clean(rootdir / prefix) / 'share' / 'icons' / 'hicolor'
@@ -56,13 +64,10 @@ clean-dist: clean clean-vendor
 build-debug *args:
     cargo build {{args}}
     cargo build --package {{applet-name}} {{args}}
+    cargo build --package {{thumbnailer-bin-name}} {{args}}
 
 # Compiles with release profile
 build-release *args: (build-debug '--release' args)
-
-# Compiles applet with release profile
-build-release-applet *args:
-    cargo build --package {{applet-name}} --release {{args}}
 
 # Compiles release profile with vendored dependencies
 build-vendored *args: vendor-extract (build-release '--frozen --offline' args)
@@ -103,9 +108,11 @@ heaptrack *args:
 # Installs files
 install:
     install -Dm0755 {{bin-src}} {{bin-dst}}
+    install -Dm0755 {{thumbnailer-bin-src}} {{thumbnailer-bin-dst}}
     install -Dm0755 {{applet-src}} {{applet-dst}}
     install -Dm0644 {{desktop-src}} {{desktop-dst}}
     install -Dm0644 {{metainfo-src}} {{metainfo-dst}}
+    install -Dm0644 {{thumbnailer-src}} {{thumbnailer-dst}}
     install -Dm0644 {{shortcuts-src}} {{shortcuts-dst}}
     for entry in {{window-desktops}}; do \
         install -Dm0644 "res/$entry" "{{applications-dst}}/$entry"; \
@@ -121,7 +128,7 @@ install-applet:
 
 # Uninstalls installed files
 uninstall:
-    rm -f {{bin-dst}} {{applet-dst}}
+    rm -f {{bin-dst}} {{thumbnailer-bin-dst}} {{applet-dst}} {{thumbnailer-dst}}
 
 # Vendor dependencies locally
 vendor:

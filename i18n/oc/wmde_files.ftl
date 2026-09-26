@@ -1,9 +1,36 @@
 appearance = Aparéncia
 theme = Tèma
 match-desktop = Assortir al burèu
-dark = Fosc
+dark = Escur
 light = Clar
 file = Fichièr
+details = Detalhs
+name = Nom
+cancel = Anullar
+repository = Depaus
+settings = Configuracion
+menu-settings = Configuracion...
+quit = Quitar
+wmde-files = WMDE Files
+comment = Gestionari de fichièrs pel burèu WMDE
+save-file = Enregistrar lo fichièr
+open-with-title = Cossí volètz dobrir « { $name } » ?
+other-apps = Autras aplicacions
+context-action-confirm-title = Executar « { $name } » ?
+run = Executar
+delete = Suprimir
+replace = Remplaçar
+owner = Propietari
+group = Grop
+write-execute = Escritura e execucion
+read-only = Lectura sola
+read-execute = Lectura e execucion
+read-write = Lectura e execucion
+read-write-execute = Lectura, escritura e execucion
+remove = Suprimir
+connecting = Connexion...
+domain = Domeni
+password = Senhal
 
 # WMDE additions (Win11-style chrome)
 search = Recercar

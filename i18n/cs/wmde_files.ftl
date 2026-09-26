@@ -433,7 +433,7 @@ calculate = Vypočítat
 error = Chyba
 search-application = Hledat podle názvu aplikace
 sidebar-label = Popisek v postranním panelu
-change-sidebar-label = Změnit popisek v postranním panelu
+change-sidebar-label = Změnit popisek
 
 # WMDE additions (Win11-style chrome)
 search = Hledat
