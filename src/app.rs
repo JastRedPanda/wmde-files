@@ -7625,6 +7625,15 @@ impl Application for App {
                 },
             },
             None => {
+                // WMDE: a popup of the embedded file dialog, such as its context menu, is a
+                // surface of the dialog's own Cosmic instance and is not in `self.windows`.
+                #[cfg(feature = "wayland")]
+                if let Some(dialog) = &self.file_dialog_opt
+                    && dialog.contains_surface(&id)
+                {
+                    return dialog.view(id);
+                }
+
                 //TODO: distinct views per monitor in desktop mode
                 return self.view_main().map(|message| match message {
                     cosmic::Action::App(app) => app,
