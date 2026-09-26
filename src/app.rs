@@ -5432,7 +5432,12 @@ impl Application for App {
             Message::TabMessage(entity_opt, tab_message) => {
                 let entity = entity_opt.unwrap_or_else(|| self.tab_model.active());
                 // The context menu opens on right-button release, so refresh paste availability now
-                let right_click = matches!(tab_message, tab::Message::RightClick(..));
+                // WMDE: the menu over empty space offers Paste as well, and a right click there
+                // arrives only as RightClickBackground.
+                let right_click = matches!(
+                    tab_message,
+                    tab::Message::RightClick(..) | tab::Message::RightClickBackground
+                );
 
                 let tab_commands = match self.tab_model.data_mut::<Tab>(entity) {
                     Some(tab) => tab.update(tab_message, self.modifiers),
