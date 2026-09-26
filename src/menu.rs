@@ -527,7 +527,7 @@ pub fn dialog_menu(
             ),
         ),
     ])
-    .item_height(ItemHeight::Dynamic(40))
+    .item_height(ItemHeight::Dynamic(20))
     .item_width(ItemWidth::Uniform(360))
     .spacing(theme::spacing().space_xxxs.into())
     .into()
@@ -578,7 +578,7 @@ pub fn menu_bar<'a>(
     };
 
     responsive_menu_bar()
-        .item_height(ItemHeight::Dynamic(40))
+        .item_height(ItemHeight::Dynamic(20))
         .item_width(ItemWidth::Uniform(360))
         .spacing(theme::spacing().space_xxxs.into())
         .into_element(
