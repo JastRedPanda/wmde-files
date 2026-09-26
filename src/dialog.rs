@@ -1176,13 +1176,16 @@ impl Application for App {
             },
         });
 
+        // WMDE: the tab's context menus parent their popups to this window. Without it they
+        // fall back to window::Id::RESERVED, the main window id, and the dialog opens its own
+        // window through window::open, which never gets that id.
         let mut tab = Tab::new(
             location,
             flags.config.dialog_tab(),
             ThumbCfg::default(),
             None,
             widget::Id::unique(),
-            None,
+            Some(flags.window_id),
         );
         tab.mode = tab::Mode::Dialog(flags.kind.clone());
         (tab.sort_name, tab.sort_direction) = flags.state.dialog_sort_name;
