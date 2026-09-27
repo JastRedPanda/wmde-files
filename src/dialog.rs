@@ -1161,9 +1161,9 @@ impl Application for App {
     /// Creates the application, and optionally emits command on initialize.
     fn init(mut core: Core, flags: Self::Flags) -> (Self, Task<Message>) {
         core.window.context_is_overlay = false;
-        core.window.show_close = false;
-        core.window.show_maximize = false;
-        core.window.show_minimize = false;
+        // WMDE: the dialog title bar. Its close button goes through `on_app_exit`, which
+        // answers the request with a cancel.
+        core.window.title_bar = cosmic::app::TitleBar::Dialog;
 
         let title = flags.kind.title();
         let accept_label = flags.kind.accept_label();
@@ -1347,16 +1347,20 @@ impl Application for App {
         Some(self.button_view())
     }
 
-    fn header_end(&self) -> Vec<Element<'_, Message>> {
-        let mut elements = Vec::with_capacity(3);
+    // WMDE: the title bar holds only the title and the close button, so the search, new
+    // folder and view menu live on the strip under it, pushed to its right end; the nav bar
+    // toggle keeps the left.
+    fn header_strip(&self) -> Vec<Element<'_, Message>> {
+        let mut elements = Vec::with_capacity(4);
+        elements.push(widget::space::horizontal().width(Length::Fill).into());
 
         if let Some(term) = self.search_get() {
             if self.core.is_condensed() {
                 elements.push(
                     //TODO: selected state is not appearing different
                     // WMDE: until it does, the hint is the only thing telling the user that
-                    // this magnifier clears the search instead of starting one. Header bar,
-                    // so the hint opens downwards.
+                    // this magnifier clears the search instead of starting one. Top of the
+                    // window, so the hint opens downwards.
                     widget::tooltip(
                         widget::button::icon(widget::icon::from_name("system-search-symbolic"))
                             .on_press(Message::SearchClear)

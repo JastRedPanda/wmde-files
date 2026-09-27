@@ -515,6 +515,7 @@ pub enum Message {
     WindowCloseId(window::Id),
     WindowDrag(window::Id),
     WindowMaximize(window::Id, bool),
+    WindowMinimize(window::Id),
     WindowToggleMaximize(window::Id),
     WindowNew,
     ZoomDefault(Option<Entity>),
@@ -3283,6 +3284,7 @@ impl Application for App {
                 core.window.show_context = flags.config.show_details;
                 // WMDE: edge-to-edge body (drop libcosmic's border_padding around content)
                 core.window.content_container = false;
+                core.window.title_bar = cosmic::app::TitleBar::Tabs;
             }
             Mode::Desktop => {
                 core.window.content_container = false;
@@ -5850,6 +5852,9 @@ impl Application for App {
             Message::WindowToggleMaximize(id) => {
                 return self.core.toggle_maximize(Some(id));
             }
+            Message::WindowMinimize(id) => {
+                return self.core.minimize(Some(id));
+            }
             Message::WindowMaximize(id, maximized) => {
                 return window::maximize(id, maximized);
             }
@@ -7377,11 +7382,6 @@ impl Application for App {
         ]
     }
 
-    fn header_end(&self) -> Vec<Element<'_, Self::Message>> {
-        // WMDE: search moved to a persistent field in the navigation row (Win11-style)
-        Vec::new()
-    }
-
     /// Creates a view after each update.
     fn view(&self) -> Element<'_, Self::Message> {
         let cosmic_theme::Spacing {
@@ -7570,12 +7570,13 @@ impl Application for App {
                     return VIEW_OPTIONS_WINDOW.view(
                         &self.core,
                         id,
-                        Chrome::new(
+                        Chrome::normal(
                             fl!("window-view-options"),
                             Message::WindowCloseId(id),
                             Message::WindowDrag(id),
-                        )
-                        .on_maximize(Message::WindowToggleMaximize(id)),
+                            Message::WindowMinimize(id),
+                            Message::WindowToggleMaximize(id),
+                        ),
                         window_body(self.desktop_view_options()),
                     );
                 }
@@ -7587,12 +7588,13 @@ impl Application for App {
                     return PREVIEW_WINDOW.view(
                         &self.core,
                         id,
-                        Chrome::new(
+                        Chrome::normal(
                             fl!("window-preview"),
                             Message::WindowCloseId(id),
                             Message::WindowDrag(id),
-                        )
-                        .on_maximize(Message::WindowToggleMaximize(id)),
+                            Message::WindowMinimize(id),
+                            Message::WindowToggleMaximize(id),
+                        ),
                         window_body(
                             self.preview(entity_opt, kind, false)
                                 .map(|x| Message::TabMessage(*entity_opt, x)),
@@ -7608,10 +7610,10 @@ impl Application for App {
                     return OPERATIONS_WINDOW.view(
                         &self.core,
                         id,
-                        // No maximize: the header of a progress window has nothing to fill a
-                        // screen with. The close button asks before it acts, so it carries a
-                        // message of its own instead of the usual `WindowCloseId`.
-                        Chrome::new(
+                        // The dialog title bar: a progress window has nothing to fill a screen
+                        // with. The close button asks before it acts, so it carries a message
+                        // of its own instead of the usual `WindowCloseId`.
+                        Chrome::dialog(
                             self.operations_title(),
                             Message::OperationsCloseRequested,
                             Message::WindowDrag(id),
@@ -8718,9 +8720,6 @@ pub(crate) mod test_utils {
 // light theme renders correctly too. The menu row and the active tab sit one container layer
 // above the body (primary), which is what keeps the strip distinct in either theme; the WMDE
 // palette carries the Win11 blue on that layer.
-fn wmde_menubar(theme: &theme::Theme) -> cosmic::iced::Color {
-    cosmic::iced::Color::from(theme.cosmic().primary(false).base)
-}
 pub(crate) fn wmde_surface(theme: &theme::Theme) -> cosmic::iced::Color {
     cosmic::iced::Color::from(theme.cosmic().background(false).base)
 }
@@ -8728,18 +8727,10 @@ pub(crate) fn wmde_field_border(theme: &theme::Theme) -> cosmic::iced::Color {
     cosmic::iced::Color::from(theme.cosmic().background(false).divider)
 }
 
-// WMDE: container background helper for the menu row. The address row below it is a bare row
-// and renders on the body surface, not on this one.
+// WMDE: the menu row is the strip under the title bar, filled the way libcosmic fills every
+// such strip. The address row below it is a bare row and renders on the body surface.
 fn wmde_menubar_container() -> theme::Container<'static> {
-    theme::Container::custom(|theme| widget::container::Style {
-        background: Some(cosmic::iced::Background::Color(wmde_menubar(theme))),
-        // WMDE: snap the fill to the pixel grid. An unsnapped strip ends on a fractional row and
-        // covers it only partly, while a neighbour painted with snap starts at the rounded one -
-        // the sliver between them belongs to neither. In wmde-term, where nothing opaque sits
-        // behind the body, exactly this showed the desktop as a hairline under the menu.
-        snap: true,
-        ..Default::default()
-    })
+    cosmic::widget::header_strip_class()
 }
 
 // WMDE: Win11-style tabs - active tab uses the body surface color so it connects to the
